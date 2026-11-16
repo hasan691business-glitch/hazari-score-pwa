@@ -1,7 +1,7 @@
 /* Hazari Score — service worker
  * Precaches the whole app so it works fully offline.
  * Bump CACHE_VERSION whenever you deploy changes so phones pick them up. */
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v6";
 const CACHE_NAME = "hazari-score-" + CACHE_VERSION;
 
 const PRECACHE = [

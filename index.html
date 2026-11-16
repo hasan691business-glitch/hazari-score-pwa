@@ -112,6 +112,120 @@
   @keyframes splashBar{ to{ transform:translateX(0); } }
   #splash.hide{opacity:0; pointer-events:none;}
 
+
+  /* ---------- Winner: living background (slow zoom + gentle sway) ---------- */
+  .win-bg{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; background:#000; }
+  .win-sway{
+    position:absolute; inset:0;
+    transform:rotate(-1deg) scale(1.045);          /* 1.045 keeps edges covered while swaying */
+    animation:winSway 12s ease-in-out infinite alternate;
+    will-change:transform;
+  }
+  .win-zoom{
+    position:absolute; inset:0;
+    background:url("winner.jpg") center/cover no-repeat;
+    animation:winZoom 16s ease-in-out infinite;    /* 8s in, 8s out */
+    will-change:transform;
+  }
+  @keyframes winSway{
+    from{ transform:rotate(-1deg) scale(1.045); }
+    to  { transform:rotate(1deg)  scale(1.045); }
+  }
+  @keyframes winZoom{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.05); }
+  }
+
+  /* ---------- Winner: rising money (behind the text) ---------- */
+  .win-money{ position:fixed; inset:0; overflow:hidden; z-index:2; pointer-events:none; opacity:.92; }
+  .note{
+    position:absolute; bottom:-60px;
+    width:var(--w); margin-left:calc(var(--w) / -2);
+    animation:noteRise var(--dur) linear var(--del) infinite;
+    will-change:transform, opacity;
+  }
+  .bill{
+    position:relative; width:100%; height:calc(var(--w) * .48);
+    border-radius:calc(var(--w) * .06);
+    background:linear-gradient(135deg,#bcd8ad,#7fae79 55%,#9cc491);
+    border:1px solid #4d8a52;
+    box-shadow:0 2px 8px rgba(0,0,0,.45);
+    animation:noteDrift var(--dur) var(--del) ease-in-out infinite;
+    will-change:transform;
+  }
+  .bill::before{
+    content:""; position:absolute; left:50%; top:50%;
+    width:36%; height:68%; transform:translate(-50%,-50%);
+    border-radius:50%; background:rgba(255,255,255,.28); border:1px solid rgba(62,122,68,.55);
+  }
+  .bill::after{
+    content:"$"; position:absolute; left:50%; top:50%; transform:translate(-50%,-52%);
+    font:700 calc(var(--w) * .26)/1 Georgia, serif; color:#3e7a44;
+  }
+  @keyframes noteRise{
+    0%{ transform:translateY(0); opacity:0; }
+    8%{ opacity:1; }
+    65%{ opacity:1; }
+    100%{ transform:translateY(-112vh); opacity:0; }
+  }
+  @keyframes noteDrift{
+    0%  { transform:translateX(0) rotate(var(--r0)); }
+    20% { transform:translateX(calc(var(--dx) * .55 + var(--wb)))       rotate(calc(var(--r0) + var(--rs) * .25)); }
+    45% { transform:translateX(calc(var(--dx) * .90 - var(--wb)))       rotate(calc(var(--r0) + var(--rs) * .50)); }
+    70% { transform:translateX(calc(var(--dx) * 1.00 + var(--wb) * .8)) rotate(calc(var(--r0) + var(--rs) * .80)); }
+    100%{ transform:translateX(calc(var(--dx) * 1.05 - var(--wb) * .5)) rotate(calc(var(--r0) + var(--rs))); }
+  }
+
+  /* ---------- Winner: golden confetti (2.5s, never blocks taps) ---------- */
+  .cf{ position:absolute; top:-24px; pointer-events:none; opacity:0;
+       animation:cfFall 1.8s ease-in forwards; will-change:transform, opacity; }
+  .cf-paper{ width:6px; height:11px; border-radius:1px; }
+  .cf-star{ font-size:13px; line-height:1; }
+  @keyframes cfFall{
+    0%{ opacity:0; transform:translate3d(0,0,0) rotate(0deg) rotateY(0deg); }
+    8%{ opacity:1; }
+    85%{ opacity:1; }
+    100%{ opacity:0; transform:translate3d(var(--sx),108vh,0) rotate(var(--rot)) rotateY(var(--rot)); }
+  }
+
+  /* ---------- Name rows: slide in one by one ---------- */
+  .name-row.enter{
+    animation:rowDrop .5s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay:calc(var(--i) * 80ms);
+  }
+  @keyframes rowDrop{
+    from{ opacity:0; transform:translateY(-18px); }
+    to  { opacity:1; transform:none; }
+  }
+
+  /* ---------- Leader glow + crown ---------- */
+  .board-row.lead{
+    box-shadow:0 0 0 1px rgba(227,194,116,.55), 0 0 14px 2px rgba(227,194,116,.40);
+    animation:leadPulse 3s ease-in-out infinite;
+  }
+  .board-row.lead.lead-new{
+    animation:leadIn .6s ease-out both, leadPulse 3s ease-in-out .6s infinite;
+  }
+  .board-row.lead-out{ animation:leadOut .5s ease-out both; }
+  @keyframes leadPulse{
+    0%,100%{ box-shadow:0 0 0 1px rgba(227,194,116,.50), 0 0 10px 1px rgba(227,194,116,.30); }
+    50%{ box-shadow:0 0 0 1px rgba(227,194,116,.75), 0 0 18px 3px rgba(227,194,116,.50); }
+  }
+  @keyframes leadIn{
+    from{ box-shadow:0 0 0 1px rgba(227,194,116,0), 0 0 0 0 rgba(227,194,116,0); }
+    to  { box-shadow:0 0 0 1px rgba(227,194,116,.50), 0 0 10px 1px rgba(227,194,116,.30); }
+  }
+  @keyframes leadOut{
+    from{ box-shadow:0 0 0 1px rgba(227,194,116,.55), 0 0 14px 2px rgba(227,194,116,.40); }
+    to  { box-shadow:0 0 0 1px rgba(227,194,116,0), 0 0 0 0 rgba(227,194,116,0); }
+  }
+  .crown{ font-size:14px; line-height:1; flex-shrink:0; }
+  .lead-new .crown{ animation:crownPop .55s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes crownPop{
+    from{ opacity:0; transform:translateY(-8px) scale(.4); }
+    to  { opacity:1; transform:none; }
+  }
+
   /* ---------- Header ---------- */
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
@@ -343,19 +457,19 @@
   /* ---------- Winner screen ---------- */
   #screen-winner{
     position:fixed; inset:0; z-index:20;
-    background:#000 url("winner.jpg") center/cover no-repeat;
+    background:#000;
     overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   #screen-winner.active{
     display:flex; flex-direction:column;
   }
   #screen-winner::before{          /* dark overlay for readability */
-    content:""; position:fixed; inset:0; pointer-events:none;
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:1;
     background:
       linear-gradient(180deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.55) 40%, rgba(0,0,0,.82) 100%);
   }
   .win-content{
-    position:relative; z-index:1;
+    position:relative; z-index:3;
     margin:auto; width:100%; max-width:480px;
     padding:calc(28px + env(safe-area-inset-top, 0px)) 22px calc(28px + env(safe-area-inset-bottom, 0px));
     display:flex; flex-direction:column; align-items:center; text-align:center;
@@ -588,6 +702,8 @@
 
   <!-- WINNER SCREEN -->
   <section class="screen" id="screen-winner">
+    <div class="win-bg" aria-hidden="true"><div class="win-sway"><div class="win-zoom"></div></div></div>
+    <div class="win-money" id="win-money" aria-hidden="true"></div>
     <div class="win-content">
       <div class="win-top">আজকের বিজয়ী</div>
       <div class="win-title">🏆 WINNER 🏆</div>
@@ -678,6 +794,7 @@
 
   function showScreen(id){
     $all(".screen").forEach(function(s){ s.classList.remove("active"); });
+    if(id !== "screen-winner"){ var cf = $("#confetti"); if(cf) cf.innerHTML = ""; }
     $("#"+id).classList.add("active");
     if(!isPopping){
       try{ history.pushState({screen:id}, "", location.href); }catch(e){}
@@ -719,7 +836,8 @@
     wrap.innerHTML = "";
     state.players.forEach(function(p, i){
       var row = document.createElement("div");
-      row.className = "name-row";
+      row.className = "name-row" + (document.getElementById("splash") ? "" : " enter");
+      row.style.setProperty("--i", i);
       row.innerHTML =
         '<div class="suit-badge" style="background:'+COLORS[i]+'">'+SUITS[i]+'</div>'+
         '<input type="text" maxlength="14" placeholder="'+DEFAULT_NAMES[i]+'" data-idx="'+i+'" value="'+escapeHtml(p.name)+'">';
@@ -752,6 +870,16 @@
     } else {
       box.style.display = "none";
     }
+  }
+
+  // Re-trigger the slide-in (used when the splash fades away)
+  function playNameEntrance(){
+    $all("#name-rows .name-row").forEach(function(r, i){
+      r.classList.remove("enter");
+      void r.offsetWidth;
+      r.style.setProperty("--i", i);
+      r.classList.add("enter");
+    });
   }
 
   $("#btn-start").addEventListener("click", function(){
@@ -951,6 +1079,7 @@
   }
 
   /* ---------------- Scoreboard ---------------- */
+  var prevLeaders = {};   // who led at the last render (player index -> true)
   function renderScoreboard(){
     var t = totals();
     var order = state.players.map(function(p,i){ return i; });
@@ -958,16 +1087,41 @@
     var maxVal = Math.max.apply(null, t);
 
     var el = $("#scoreboard");
+    // remember where each row was, so rows can glide to their new place
+    var before = {};
+    $all(".board-row", el).forEach(function(r){ before[r.getAttribute("data-idx")] = r.getBoundingClientRect().top; });
+
     el.innerHTML = "";
+    var nowLeaders = {};
+    var rows = [];
     order.forEach(function(i, pos){
       var p = state.players[i];
+      var isLead = t[i] === maxVal && maxVal > 0;
+      if(isLead) nowLeaders[i] = true;
       var row = document.createElement("div");
-      row.className = "board-row" + (t[i] === maxVal && maxVal > 0 ? " lead" : "");
+      row.className = "board-row" + (isLead ? " lead" : "") +
+        (isLead && !prevLeaders[i] ? " lead-new" : "") +
+        (!isLead && prevLeaders[i] ? " lead-out" : "");
+      row.setAttribute("data-idx", i);
       row.innerHTML =
         '<div class="rank">'+(pos+1)+'</div>'+
-        '<div class="board-name"><span class="suit-ic" style="background:'+p.color+'">'+p.suit+'</span><span class="nm">'+escapeHtml(p.name)+'</span></div>'+
+        '<div class="board-name"><span class="suit-ic" style="background:'+p.color+'">'+p.suit+'</span><span class="nm">'+escapeHtml(p.name)+'</span>'+
+          (isLead ? '<span class="crown" aria-hidden="true">👑</span>' : '')+'</div>'+
         '<div class="board-total">'+t[i]+'</div>';
       el.appendChild(row);
+      rows.push([i,row]);
+    });
+    prevLeaders = nowLeaders;
+
+    rows.forEach(function(pair){
+      var i = pair[0], row = pair[1];
+      if(before[i] === undefined || !row.animate) return;
+      var dy = before[i] - row.getBoundingClientRect().top;
+      if(Math.abs(dy) < 1) return;
+      try{
+        row.animate([{transform:"translateY("+dy+"px)"},{transform:"translateY(0)"}],
+                    {duration:480, easing:"cubic-bezier(.2,.8,.2,1)"});
+      }catch(e){}
     });
   }
 
@@ -1088,26 +1242,59 @@
     launchConfetti();
   }
 
+  // Golden confetti: spawns within 0.6s, each piece falls ~1.8s -> everything is gone by 2.5s.
+  var confTimer = null;
   function launchConfetti(){
     var host = $("#confetti");
+    clearTimeout(confTimer);
     host.innerHTML = "";
-    var pieces = SUITS.concat(SUITS, SUITS, ["🪙","🪙","🪙","✨","✨"]);
-    pieces.forEach(function(s, i){
-      var span = document.createElement("span");
-      span.className = "conf";
-      span.textContent = s;
-      var left = Math.random()*100;
-      var dur = 2.4 + Math.random()*1.8;
-      var delay = Math.random()*0.6;
-      var colorIdx = SUITS.indexOf(s);
-      span.style.left = left+"vw";
-      if(colorIdx > -1){ span.style.setProperty("color", COLORS[colorIdx]); }
-      span.style.animationDuration = dur+"s";
-      span.style.animationDelay = delay+"s";
-      host.appendChild(span);
-    });
-    setTimeout(function(){ host.innerHTML = ""; }, 5000);
+    var golds = ["#f6cf5b","#e3c274","#c7a24c","#fff0b0","#ffd86b"];
+    var frag = document.createDocumentFragment();
+    for(var i = 0; i < 36; i++){
+      var el = document.createElement("span");
+      var star = (i % 3 === 0);
+      var c = golds[i % golds.length];
+      el.className = "cf " + (star ? "cf-star" : "cf-paper");
+      if(star){ el.textContent = "★"; el.style.color = c; }
+      else { el.style.background = "linear-gradient(135deg,"+c+",#c7a24c)"; }
+      el.style.left = (Math.random()*100).toFixed(1)+"vw";
+      el.style.setProperty("--sx", ((Math.random()-.5)*60).toFixed(0)+"px");
+      el.style.setProperty("--rot", (360+Math.random()*540).toFixed(0)+"deg");
+      el.style.animationDuration = (1.7+Math.random()*.2).toFixed(2)+"s";
+      el.style.animationDelay = (Math.random()*.6).toFixed(2)+"s";
+      frag.appendChild(el);
+    }
+    host.appendChild(frag);
+    confTimer = setTimeout(function(){ host.innerHTML = ""; }, 2600);
   }
+
+  // Floating money notes for the winner screen (built once; CSS runs them whenever the screen is shown).
+  function buildMoney(){
+    var host = $("#win-money");
+    if(!host || host.children.length) return;
+    var N = 14, frag = document.createDocumentFragment();
+    for(var i = 0; i < N; i++){
+      var side = (i % 2) ? 1 : -1;
+      var dur = 5.5 + Math.random()*4;
+      var r0 = (Math.random()*50 - 25);
+      var n = document.createElement("div");
+      n.className = "note";
+      n.style.left = (62 + Math.random()*18).toFixed(1)+"%";          // starts bottom, mid-right (money gun)
+      n.style.setProperty("--w", (34 + Math.random()*30).toFixed(0)+"px");
+      n.style.setProperty("--dur", dur.toFixed(2)+"s");
+      n.style.setProperty("--del", (i*0.18).toFixed(2)+"s");
+      var b = document.createElement("div");
+      b.className = "bill";
+      b.style.setProperty("--dx", (side > 0 ? (10 + Math.random()*12) : -(30 + Math.random()*18)).toFixed(1)+"vw");   // drifts up and out (right side kept short so notes stay on screen)
+      b.style.setProperty("--wb", (6 + Math.random()*10).toFixed(1)+"px");           // wobble
+      b.style.setProperty("--r0", r0.toFixed(0)+"deg");
+      b.style.setProperty("--rs", ((Math.random() < .5 ? -1 : 1)*(40 + Math.random()*80)).toFixed(0)+"deg");
+      n.appendChild(b);
+      frag.appendChild(n);
+    }
+    host.appendChild(frag);
+  }
+  buildMoney();
 
   /* ---------------- New game / change players ---------------- */
   $("#btn-newgame").addEventListener("click", function(){
@@ -1253,6 +1440,7 @@
     splashStarted = true;
     setTimeout(function(){
       splash.classList.add("hide");
+      playNameEntrance();
       setTimeout(function(){ if(splash.parentNode) splash.remove(); }, 700);
     }, 2500);
   }
